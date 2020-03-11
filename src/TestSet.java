@@ -9,10 +9,7 @@
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.TreeMap;
+import java.util.*;
 
 public class TestSet {
     public static void main(String[] args) {
@@ -21,11 +18,15 @@ public class TestSet {
             PrintWriter out = new PrintWriter("output.txt", "UTF-8");
             //ArrayList<Integer> digits = new ArrayList<>();
             //LinkedList<Integer> digits = new LinkedList<>();
-            SortedIArrayList digits = new SortedIArrayList();
+            //SortedIArrayList digits = new SortedIArrayList();
             //SortedIArrayOnMap digits = new SortedIArrayOnMap();
+            //NotSortedIArrayList digits = new NotSortedIArrayList();
+            //SortedIArray digits = new SortedIArray();
+            NotSortedIArray digits = new NotSortedIArray();
             int nOper = in.nextInt();
-            while (nOper-- > 0) {
+            if(nOper > 0)
                 digits.setCapacity(nOper);
+            while (nOper-- > 0) {
                 //System.out.println("nOper = " + nOper);
                 int tOper = in.nextInt();
                 //System.out.println("tOper = " + tOper);
@@ -45,6 +46,7 @@ public class TestSet {
     public static class SortedIArrayList {
         ArrayList<Integer> data = new ArrayList<>();
         int searchLevel = 20;
+
 
         Integer removeMin() {
             return data.remove(0);
@@ -117,6 +119,102 @@ public class TestSet {
         @Override
         public String toString() {
             return data.toString();
+        }
+    }
+
+    public static class NotSortedIArrayList {
+        ArrayList<Integer> data = new ArrayList<>();
+        //LinkedList<Integer> data = new LinkedList<>();
+        boolean sorted = false;
+
+        Integer removeMin() {
+            if (sorted)
+                return data.remove(0);
+            else {
+                data.sort((a1, a2) -> a1.compareTo(a2));
+                sorted = true;
+                return data.remove(0);
+            }
+        }
+
+        void add(Integer element) {
+            data.add(element);
+            sorted = false;
+        }
+
+        void setCapacity(int capacity) {
+            data.ensureCapacity(capacity);
+        }
+
+        @Override
+        public String toString() {
+            return data.toString();
+        }
+    }
+
+    public static class SortedIArray {
+        int[] data = new int[100];
+        int size = 0;
+
+        int removeMin(){
+            return -data[--size];
+        }
+
+        void add(int element) {
+            int idx = Arrays.binarySearch(data, 0, size, -element);
+            if (idx < 0)
+                idx = -idx-1;
+            if (idx != size)
+                System.arraycopy(data, idx, data, idx + 1, size - idx);
+            data[idx] = - element;
+            size++;
+        }
+
+        void setCapacity(int capacity) {
+            data = new int[capacity];
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < size; i++) {
+                result.append(data[i]);
+                result.append(" ");
+            }
+            return result.toString();
+        }
+    }
+
+    public static class NotSortedIArray{
+        int[] data = new int[10];
+        int size =0;
+        boolean sorted = false;
+
+        int removeMin(){
+            if(!sorted){
+                Arrays.sort(data, 0, size);
+                sorted = true;
+            }
+            return -data[--size];
+        }
+
+        void add(int element){
+            data[size++] = -element;
+            sorted = false;
+        }
+
+        void setCapacity(int capacity) {
+            data = new int[capacity];
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < size; i++) {
+                result.append(data[i]);
+                result.append(" ");
+            }
+            return result.toString();
         }
     }
 }
